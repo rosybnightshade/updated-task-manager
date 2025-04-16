@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>tmwls</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playwrite+MX+Guides&display=swap" rel="stylesheet">
+    <style>
+        * {
+            padding:0;
+            margin:0;
+            box-sizing: border-box;
+            font-family: "Playwrite MX Guides", cursive;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .is {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #ti {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            flex-direction: column;
+        }
+        #a-b {
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            background-color: green;
+        }
+        .c-a {
+            display: block;
+            margin-top: 20px;
+            cursor:pointer;
+            color: white;
+            font-size: 16px;
+            background-color: orange;
+        }
+        #n-t {
+            text-align: center ;
+            color: grey;
+            padding: 20px 0px;
+            font-style: italic;
+        }
+        .s-b{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top:15px;
+        }
+        #t-l {
+            list-style-type:none ;
+
+        }
+        .t-l {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: whitesmoke;
+            margin-bottom: 8px;
+        }
+        .t-t {
+            flex: 1;
+            margin-left: 10px;
+        }
+        .comp {
+            text-decoration: line-through;
+            color: grey;
+        }
+        .d-b {
+            color: white;
+            background-color: red;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Task Manager</h1>
+
+        <div class="is">
+            <input type="text" id="ti" placeholder="no">
+            <button id="a-b" onclick="addNew()">add</button>
+        </div>
+
+        <ul id="t-l" class="t-l">
+
+        </ul>
+
+        <div id="n-t">
+            No tasks yet bi-
+        </div>
+
+        <div class="s-b">
+            <span id="t-c">Total: 0 tasks</span>
+            <span id="cc">Completed: 0</span>
+        </div>
+
+        <button id="c-a" class="c-a" onclick="cancel()">Clear All Tasks</button>
+    </div>
+
+    <script>
+        console.log('em pleh');
+
+        const taskInput = document.getElementById('ti');
+        const addButton = document.getElementById('a-b');
+        const taskList = document.getElementById('t-l');
+        const noTasks = document.getElementById('n-t');
+        const clearAll = document.getElementById('c-a');
+        const taskCount = document.getElementById('t-c');
+        const completedCount = document.getElementById('cc');
+
+       let tasks = [];
+
+       function addNew() {
+        const tasktext = taskInput.value.trim();
+        if (tasktext) {
+            const newTask = {
+                id: Date.now(),
+                text: tasktext,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            saveTasks();
+            renderTasks();
+        };
+       }
+
+       function toggleTaskCompletion() {
+        for (let i=0;i<tasks.length;i++) {
+            if (tasks[i].id === task.id) {
+                tasks[i].completed =! tasks[i];
+                break;
+            }
+        }
+        saveTasks();
+        renderTasks();
+       }
+
+       function deleteTask() {
+        tasks = tasks.filter(function (task) {
+            return task.id !== taskId 
+        });
+
+        saveTasks();
+        renderTasks();
+       }
+       function saveTasks() {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+       }
+
+       function loadTasks() {
+        const saved = localStorage.getItem('tasks');
+        if (saved) {tasks = JSON.parse(saved);}
+       }
+
+       function renderTasks() {
+            if (tasks.length !== 0) {
+                noTasks.style.display = 'none'
+            } else { noTasks.style.display = 'block'}
+            tasks.forEach(function(task) {
+                const li = document.createElement('li');
+                li.textContent = task.text;
+                li.className = 't-l';  
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('change', function() {
+                    toggleTaskCompletion(task.id);
+
+                });
+
+                const span = document.createElement('span');
+                span.className = task.completed ? 'task-text completed' : 'texk-text';
+                span.textContent = task.text;
+
+                const deletebtn  = document.createElement('button');
+                deletebtn.className = 'd-b';
+                deletebtn.textContent = 'delete'
+                deletebtn.addEventListener('click', () => {
+                    deleteTask();
+                });
+
+        
+
+                li.append(checkbox);
+                li.append(span);
+                li.append(deletebtn);
+                taskList.append(li);})
+       }
+
+       updateTaskCounts();
+       function cancel() {
+        if (tasks.length > 0) {
+            const confirmed = confirm('Are you sure you want to continue?');
+            if (confirmed) {
+                tasks = [];
+                saveTasks();
+                renderTasks();
+            }
+        }
+       }
+
+       function updateTaskCounts() {
+        let totalTasks = tasks.length;
+        let completedTasks = tasks.filter(function(task) {
+            return task.completed;
+        }).length
+        taskCount.textContent = `Total: ${totalTasks} tasks`;
+        completedCount.textContent = `Completed: ${completedTasks}`
+       }
+       loadTasks();
+        
+    </script>
+</body>
+</html>
